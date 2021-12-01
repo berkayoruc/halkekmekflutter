@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Buffet {
   int _id;
   String _district;
