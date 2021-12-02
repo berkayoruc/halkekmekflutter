@@ -34,7 +34,20 @@ List<Buffet> parseBuffets(List<dynamic> arguments) {
   return values;
 }
 
-FloatingActionButton buildFab() {
+List<BuffetMarker> getMarkers(List<Buffet>? buffets) {
+  return buffets!
+      .map<BuffetMarker>((e) => BuffetMarker(
+          builder: (ctx) => buildMarker(),
+          name: e.name,
+          district: e.district,
+          neighborhood: e.neighborhood,
+          anchorPos: AnchorPos.align(AnchorAlign.center),
+          point: LatLng(double.parse(e.latitude.replaceAll(' ', '')),
+              double.parse(e.longitude.replaceAll(' ', '')))))
+      .toList();
+}
+
+FloatingActionButton buildMarker() {
   return const FloatingActionButton(
       heroTag: null,
       onPressed: null,
@@ -45,15 +58,23 @@ FloatingActionButton buildFab() {
       ));
 }
 
-List<BuffetMarker> getMarkers(List<Buffet>? buffets) {
-  return buffets!
-      .map<BuffetMarker>((e) => BuffetMarker(
-          builder: (ctx) => buildFab(),
-          name: e.name,
-          district: e.district,
-          neighborhood: e.neighborhood,
-          anchorPos: AnchorPos.align(AnchorAlign.center),
-          point: LatLng(double.parse(e.latitude.replaceAll(' ', '')),
-              double.parse(e.longitude.replaceAll(' ', '')))))
-      .toList();
+FloatingActionButton buildClusterMarker(List<Marker> markers) {
+  return FloatingActionButton(
+    heroTag: null,
+    onPressed: null,
+    backgroundColor: Colors.orange,
+    child: Text(markers.length.toString()),
+  );
+}
+
+RichText buildPopupContent(BuffetMarker buffetMarker) {
+  return RichText(
+      text: TextSpan(children: [
+    const TextSpan(
+        text: 'İHE Büfe\n',
+        style: TextStyle(color: Color(0xFF9AA6B5), fontSize: 10)),
+    TextSpan(
+        text: buffetMarker.name,
+        style: const TextStyle(color: Color(0xFF323F4B), fontSize: 12)),
+  ]));
 }

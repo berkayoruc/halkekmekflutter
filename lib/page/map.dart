@@ -15,7 +15,6 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  MapController mapController = MapController();
   PopupController popupController = PopupController();
 
   @override
@@ -25,48 +24,7 @@ class _MapPageState extends State<MapPage> {
       builder: (ctx, snapshot) {
         if (snapshot.hasData) {
           return Scaffold(
-            body: FlutterMap(
-              mapController: mapController,
-              options: MapOptions(
-                  plugins: [
-                    MarkerClusterPlugin(),
-                  ],
-                  center: LatLng(41, 29),
-                  zoom: 10.0,
-                  interactiveFlags:
-                      InteractiveFlag.all & ~InteractiveFlag.rotate,
-                  onTap: (_, x) {
-                    if (popupController.selectedMarkers.isNotEmpty) {
-                      popupController.hideAllPopups();
-                    }
-                  }),
-              children: [
-                TileLayerWidget(
-                    options: TileLayerOptions(
-                  urlTemplate:
-                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  subdomains: ['a', 'b', 'c'],
-                )),
-                MarkerClusterLayerWidget(
-                    options: MarkerClusterLayerOptions(
-                        showPolygon: false,
-                        maxClusterRadius: 50,
-                        size: const Size(40, 40),
-                        fitBoundsOptions: const FitBoundsOptions(
-                          padding: EdgeInsets.all(50),
-                        ),
-                        markers: getMarkers(snapshot.data),
-                        popupOptions: buildPopupOptions(),
-                        builder: (context, markers) {
-                          return FloatingActionButton(
-                            heroTag: null,
-                            onPressed: null,
-                            backgroundColor: Colors.orange,
-                            child: Text(markers.length.toString()),
-                          );
-                        }))
-              ],
-            ),
+            body: buildFlutterMap(snapshot),
           );
         } else if (snapshot.hasError) {
           return Center(
@@ -81,6 +39,46 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  FlutterMap buildFlutterMap(AsyncSnapshot<List<Buffet>> snapshot) {
+    return FlutterMap(
+      options: MapOptions(
+          plugins: [
+            MarkerClusterPlugin(),
+          ],
+          center: LatLng(41, 29),
+          zoom: 10.0,
+          interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+          onTap: (_, x) {
+            if (popupController.selectedMarkers.isNotEmpty) {
+              popupController.hideAllPopups();
+            }
+          }),
+      children: [
+        TileLayerWidget(
+            options: TileLayerOptions(
+          urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          subdomains: ['a', 'b', 'c'],
+        )),
+        MarkerClusterLayerWidget(
+            options: buildMarkerClusterLayerOptions(snapshot))
+      ],
+    );
+  }
+
+  MarkerClusterLayerOptions buildMarkerClusterLayerOptions(
+      AsyncSnapshot<List<Buffet>> snapshot) {
+    return MarkerClusterLayerOptions(
+        showPolygon: false,
+        maxClusterRadius: 50,
+        size: const Size(40, 40),
+        fitBoundsOptions: const FitBoundsOptions(
+          padding: EdgeInsets.all(50),
+        ),
+        markers: getMarkers(snapshot.data),
+        popupOptions: buildPopupOptions(),
+        builder: (context, markers) => buildClusterMarker(markers));
+  }
+
   PopupOptions buildPopupOptions() {
     return PopupOptions(
       popupController: popupController,
@@ -93,26 +91,9 @@ class _MapPageState extends State<MapPage> {
             color: Colors.white,
           ),
           child: InkWell(
-              onTap: () => openMapSheet(
-                  context,
-                  marker.point.latitude,
-                  marker.point.longitude,
-                  marker.name),
-              child: RichText(
-                  text: TextSpan(children: [
-                const TextSpan(
-                    text: 'İHE Büfe\n',
-                    style: TextStyle(
-                        color: Color(0xFF9AA6B5),
-                        fontSize: 10,
-                        fontFamily: 'MarkPro')),
-                TextSpan(
-                    text: buffetMarker.name,
-                    style: const TextStyle(
-                        color: Color(0xFF323F4B),
-                        fontSize: 12,
-                        fontFamily: 'MarkPro')),
-              ]))),
+              onTap: () => openMapSheet(context, marker.point.latitude,
+                  marker.point.longitude, marker.name),
+              child: buildPopupContent(buffetMarker)),
         );
       },
       markerTapBehavior: MarkerTapBehavior.togglePopupAndHideRest(),
