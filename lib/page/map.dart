@@ -4,6 +4,7 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:halkekmek/components/buffet_marker.dart';
 import 'package:halkekmek/core/models/ihe.dart';
 import 'package:halkekmek/core/services/ihe.dart';
+import 'package:halkekmek/core/services/open_map_launcher.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapPage extends StatefulWidget {
@@ -48,40 +49,6 @@ class _MapPageState extends State<MapPage> {
                 )),
                 MarkerClusterLayerWidget(
                     options: MarkerClusterLayerOptions(
-                        popupOptions: PopupOptions(
-                          popupController: popupController,
-                          popupBuilder: (context, marker) {
-                            final buffetMarker = marker as BuffetMarker;
-                            return Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                color: Colors.white,
-                              ),
-                              child: InkWell(
-                                  onTap: () {
-                                    print(buffetMarker.name);
-                                  },
-                                  child: RichText(
-                                      text: TextSpan(children: [
-                                    const TextSpan(
-                                        text: 'İHE Büfe\n',
-                                        style: TextStyle(
-                                            color: Color(0xFF9AA6B5),
-                                            fontSize: 10,
-                                            fontFamily: 'MarkPro')),
-                                    TextSpan(
-                                        text: buffetMarker.name,
-                                        style: const TextStyle(
-                                            color: Color(0xFF323F4B),
-                                            fontSize: 12,
-                                            fontFamily: 'MarkPro')),
-                                  ]))),
-                            );
-                          },
-                          markerTapBehavior:
-                              MarkerTapBehavior.togglePopupAndHideRest(),
-                        ),
                         showPolygon: false,
                         maxClusterRadius: 50,
                         size: const Size(40, 40),
@@ -89,6 +56,7 @@ class _MapPageState extends State<MapPage> {
                           padding: EdgeInsets.all(50),
                         ),
                         markers: getMarkers(snapshot.data),
+                        popupOptions: buildPopupOptions(),
                         builder: (context, markers) {
                           return FloatingActionButton(
                             heroTag: null,
@@ -110,6 +78,44 @@ class _MapPageState extends State<MapPage> {
           );
         }
       },
+    );
+  }
+
+  PopupOptions buildPopupOptions() {
+    return PopupOptions(
+      popupController: popupController,
+      popupBuilder: (context, marker) {
+        final buffetMarker = marker as BuffetMarker;
+        return Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: Colors.white,
+          ),
+          child: InkWell(
+              onTap: () => openMapSheet(
+                  context,
+                  marker.point.latitude,
+                  marker.point.longitude,
+                  marker.name),
+              child: RichText(
+                  text: TextSpan(children: [
+                const TextSpan(
+                    text: 'İHE Büfe\n',
+                    style: TextStyle(
+                        color: Color(0xFF9AA6B5),
+                        fontSize: 10,
+                        fontFamily: 'MarkPro')),
+                TextSpan(
+                    text: buffetMarker.name,
+                    style: const TextStyle(
+                        color: Color(0xFF323F4B),
+                        fontSize: 12,
+                        fontFamily: 'MarkPro')),
+              ]))),
+        );
+      },
+      markerTapBehavior: MarkerTapBehavior.togglePopupAndHideRest(),
     );
   }
 }

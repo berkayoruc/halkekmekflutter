@@ -11,7 +11,8 @@ import 'package:latlong2/latlong.dart';
 import '../constant.dart';
 
 Future<List<Buffet>> getBuffets() async {
-  final response = await http.get(Uri.parse(buffetUrl));
+  var headers = {'Access-Control-Allow-Origin': '*'};
+  final response = await http.get(Uri.parse(buffetUrl), headers: headers);
   return compute(parseBuffets, [response.body]);
 }
 

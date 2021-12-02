@@ -14,6 +14,7 @@ dependencies:
 
   http: any
   flutter_map: ^0.14.0
+  map_launcher: ^2.1.1
   cupertino_icons: ^1.0.2
   flutter_map_marker_cluster: ^0.4.3
 
