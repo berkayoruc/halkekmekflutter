@@ -19,23 +19,26 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Buffet>>(
-      future: getBuffets(),
-      builder: (ctx, snapshot) {
-        if (snapshot.hasData) {
-          return Scaffold(
-            body: buildFlutterMap(snapshot),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text(snapshot.error.toString()),
-          );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('IHE'),
+      ),
+      body: FutureBuilder<List<Buffet>>(
+        future: getBuffets(),
+        builder: (ctx, snapshot) {
+          if (snapshot.hasData) {
+            return buildFlutterMap(snapshot);
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
     );
   }
 
