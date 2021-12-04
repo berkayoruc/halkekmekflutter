@@ -20,9 +20,6 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('IHE'),
-      ),
       body: FutureBuilder<List<Buffet>>(
         future: getBuffets(),
         builder: (ctx, snapshot) {
