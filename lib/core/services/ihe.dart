@@ -48,22 +48,29 @@ List<BuffetMarker> getMarkers(List<Buffet>? buffets) {
 }
 
 FloatingActionButton buildMarker() {
-  return const FloatingActionButton(
+  return FloatingActionButton(
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12))),
       heroTag: null,
       onPressed: null,
-      backgroundColor: Colors.deepOrangeAccent,
-      child: Icon(
-        Icons.location_on,
+      backgroundColor: Colors.grey[800],
+      child: const Icon(
+        Icons.bakery_dining,
         color: Colors.white,
       ));
 }
 
 FloatingActionButton buildClusterMarker(List<Marker> markers) {
   return FloatingActionButton(
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16))),
     heroTag: null,
     onPressed: null,
-    backgroundColor: Colors.orange,
-    child: Text(markers.length.toString()),
+    backgroundColor: Colors.grey[850],
+    child: Text(
+      markers.length.toString(),
+      style: const TextStyle(fontWeight: FontWeight.w700),
+    ),
   );
 }
 
@@ -75,6 +82,9 @@ RichText buildPopupContent(BuffetMarker buffetMarker) {
         style: TextStyle(color: Color(0xFF9AA6B5), fontSize: 10)),
     TextSpan(
         text: buffetMarker.name,
-        style: const TextStyle(color: Color(0xFF323F4B), fontSize: 12)),
+        style: const TextStyle(
+            color: Color(0xFF323F4B),
+            fontSize: 12,
+            fontWeight: FontWeight.w700)),
   ]));
 }

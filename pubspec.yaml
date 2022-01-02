@@ -32,7 +32,12 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
-  # fonts:
+  fonts:
+    - family: Gilroy
+      fonts:
+        - asset: fonts/gilroy/Gilroy-Light.otf
+        - asset: fonts/gilroy/Gilroy-ExtraBold.otf
+          weight: 700
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf
