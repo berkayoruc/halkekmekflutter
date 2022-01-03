@@ -77,9 +77,10 @@ FloatingActionButton buildClusterMarker(List<Marker> markers) {
 RichText buildPopupContent(BuffetMarker buffetMarker) {
   return RichText(
       text: TextSpan(children: [
-    const TextSpan(
-        text: 'İHE Büfe\n',
-        style: TextStyle(color: Color(0xFF9AA6B5), fontSize: 10)),
+    TextSpan(
+        text:
+            '${buffetMarker.district[0].toUpperCase()}${buffetMarker.district.substring(1).toLowerCase()}\n',
+        style: const TextStyle(color: Color(0xFF9AA6B5), fontSize: 10)),
     TextSpan(
         text: buffetMarker.name,
         style: const TextStyle(

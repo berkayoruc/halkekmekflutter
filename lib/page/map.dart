@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
-import 'package:halkekmek/components/buffet_marker.dart';
-import 'package:halkekmek/core/models/ihe.dart';
-import 'package:halkekmek/core/services/ihe.dart';
-import 'package:halkekmek/core/services/open_map_launcher.dart';
+import 'package:halkekmek/core/services/location.dart';
+import 'package:halkekmek/core/services/locator.dart';
+import '../components/buffet_marker.dart';
+import '../components/buffet_search.dart';
+import '../core/models/ihe.dart';
+import '../core/services/ihe.dart';
+import '../core/services/open_map_launcher.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapPage extends StatefulWidget {
@@ -16,6 +19,7 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   PopupController popupController = PopupController();
+  MapController mapController = MapController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +46,7 @@ class _MapPageState extends State<MapPage> {
   Stack buildFlutterMap(AsyncSnapshot<List<Buffet>> snapshot) {
     return Stack(children: [
       FlutterMap(
+        mapController: mapController,
         options: MapOptions(
             center: LatLng(41, 29),
             zoom: 10,
@@ -96,7 +101,7 @@ class _MapPageState extends State<MapPage> {
                     var a = "s";
                   },
                   child: Icon(
-                    Icons.menu,
+                    Icons.star_border,
                     color: Colors.grey[850],
                   )),
             ),
@@ -126,8 +131,17 @@ class _MapPageState extends State<MapPage> {
                       backgroundColor: Colors.white.withOpacity(0.95),
                       shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(16)))),
-                  onPressed: () {
-                    var a = "s";
+                  onPressed: () async {
+                    popupController.hideAllPopups();
+                    final result = await showSearch(
+                        context: context,
+                        delegate: BuffetSearch(getMarkers(snapshot.data)));
+                    if (result != null && result is BuffetMarker) {
+                      mapController.onReady.then((value) {
+                        mapController.move(result.point, 15);
+                        popupController.togglePopup(result);
+                      });
+                    }
                   },
                   child: Icon(
                     Icons.search,
@@ -191,11 +205,14 @@ class _MapPageState extends State<MapPage> {
                         shape: const RoundedRectangleBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(16)))),
-                    onPressed: () {
-                      var a = "s";
+                    onPressed: () async {
+                      final locationService = getIt<LocationService>();
+                      await locationService.getPosition().then((result) {
+                        print(result);
+                      });
                     },
                     child: Icon(
-                      Icons.near_me,
+                      Icons.near_me_outlined,
                       color: Colors.grey[850],
                     )),
               ),

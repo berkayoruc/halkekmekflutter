@@ -13,6 +13,8 @@ dependencies:
     sdk: flutter
 
   http: any
+  get_it: ^7.2.0
+  location: ^4.3.0
   flutter_map: ^0.14.0
   map_launcher: ^2.1.1
   cupertino_icons: ^1.0.2
